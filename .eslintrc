@@ -1,0 +1,50 @@
+{
+    "extends": "eslint-config-airbnb",
+    "parser": "babel-eslint",
+    "plugins": [
+        "react-hooks",
+    ],
+    "rules": {
+        "indent": [ "warn", 4 ], // 띄어쓰기 체크
+        "space-in-parens": ["warn", "always", { "exceptions": ["{}", "[]"] }], // () 안쪽에 띄어쓰기 한번 체크
+        "object-curly-spacing": ["warn", "always"], // 중괄호 안에 일정한 간격을 유지합니다
+        "array-bracket-spacing": ["warn", "always"], // 배열 괄호 안에 하나 이상의 공백이나 줄 바꿈이 필요합니다
+        "object-curly-newline": ["warn", { "multiline": true } ], // 속성 내부 또는 속성 사이에 줄 바꿈이있는 경우 줄 바꿈이 필요합니다. 그렇지 않으면 줄 바꿈이 허용되지 않습니다.
+        "template-curly-spacing": ["warn", "always"], // 중괄호 쌍 안에 하나 이상의 공백이 필요합니다.
+        "no-underscore-dangle": ["warn", { "allowAfterThis": true, "allow": [ "_id" ] }], // this객체의 멤버에서 매달린 밑줄을 허용, _id 밑줄 허용
+        "no-param-reassign": ["warn", { "props": false }], // 함수 매개 변수 재 할당 금지
+        "max-len": ["warn", { "code": 400 }], // 최대 줄 길이를 적용합니다
+        "no-use-before-define": ["warn", { "functions": true }], // 조기 사용 금지 (미사용 전 정의)
+        "import/no-unresolved": ["warn", { "ignore": [ "request-service" ] }],
+        "no-unused-vars": ["warn", { "vars": "all", "args": "none", "ignoreRestSiblings": false }], // 사용하지 않는 변수 허용 (사용하지 않는 변수)
+        // 전역 범위의 변수를 포함하여 사용에 대한 모든 변수를 확인합니다. 이것이 기본 설정입니다.
+        // 인수를 확인하지 마십시오. 
+        "jsx-a11y/click-events-have-key-events": 0, // 적용 onClick다음 중 하나 이상을 동반 : onKeyUp, onKeyDown, onKeyPress
+        "jsx-a11y/interactive-supports-focus": 0, // 대화식 역할 및 상호 작용 핸들러 (마우스 또는 키 누름)가있는 요소는 초점을 맞출 수 있어야합니다.
+        "react/prefer-stateless-function": 0,
+        "react/jsx-curly-spacing": [2, "always"],
+        "react/jsx-closing-bracket-location": 0, // JSX에서 닫는 괄호 위치 확인
+        "react/sort-comp": 0, // 컴포넌트 메소드 순서 시행 (반응 / 정렬-콤포지션)
+        "react/jsx-indent": ["warn", 4], // JSX 들여 쓰기 확인
+        "react/jsx-indent-props": ["warn", 4], // JSX에서 props 들여 쓰기 확인 
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }], // JSX를 포함 할 수있는 파일 확장자 제한
+        // "react/prop-types": [2, { "ignore": ["children", "navigation", "style", "store"] }],
+        "react/prop-types": [0, { "ignore": ["children", "navigation", "style", "store"] }],
+        "react/forbid-prop-types": [2, { "forbid": ["any"] }], // 특정 propTypes 금지 (반응 형 / 금지 형)
+        "react-hooks/rules-of-hooks": "warn",
+        "consistent-return": ["off", { "treatUndefinedAsUnspecified": true }],
+        "array-callback-return": ["off"],
+        "jsx-a11y/anchor-is-valid": [ "warn", { "components": [], "specialLink": [ "hrefLeft", "hrefRight" ], "aspects": [ "noHref", "invalidHref", "preferButton" ],
+        "no-plusplus": ["warn", { "allowForLoopAfterthoughts": true }],
+        "no-undef": ["warn", { "naver": true }],
+        "prefer-destructuring": ["warn", {"object": false, "array": false}],
+        "react/button-has-type": ["off"]
+        }]
+      },
+    "env": {
+        "browser": true,
+        "mocha": true,
+        "node": true,
+        "es6": true
+    }
+}
