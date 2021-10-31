@@ -1,7 +1,7 @@
 /* eslint-disable react/button-has-type */
-import React, { useMemo, useState } from 'react';
-import { Fragment } from 'react/cjs/react.production.min';
+import React, { useCallback, useMemo, useState, Fragment } from 'react';
 import './App.css';
+import classnames from 'classnames';
 
 const ROW = 3;
 const COLUMN = 3;
@@ -15,12 +15,15 @@ const COLUMN = 3;
 // 6. 승자가 없는 경우 무승부라는 메시지를 표시해주세요.
 
 function Square( props ) {
-    const { value, onClick } = props;
+    const { value, onClick, win } = props;
     const [ clickValue, setClickValue ] = useState( null );
     useMemo( () => setClickValue( value ), [ value ]);
 
     return (
-        <button className="square" onClick={ onClick }>
+        <button
+            className={ classnames( 'square', win && 'win' ) }
+            onClick={ onClick }
+        >
             {clickValue}
             {/* TODO */}
         </button>
@@ -28,19 +31,38 @@ function Square( props ) {
 }
 
 function Board( props ) {
-    // const [ squares, setSquares ] = useState( Array( 9 ).fill( null ) );
-    // const [ xIsNext, setXIsNext ] = useState( true );
-
+    const { winnerLines } = props;
     const renderSquare = ( i ) => (
         <Square
+            win={ winnerLines.includes( i ) }
+            key={ i }
             value={ props.squares[i] }
             onClick={ () => props.onClick( i ) }
         />
     );
 
+    const boardContainer = useCallback( () => {
+        const boardBox = [];
+        for ( let i = 0; i < ROW; i += 1 ) {
+            const children = [];
+            for ( let j = 0; j < COLUMN; j += 1 ) {
+                const idx = j + ( i * COLUMN );
+                children.push( renderSquare( idx ) );
+            }
+            const boardRow = React.createElement(
+                'div',
+                { className: 'board-row', key: `Row_${ i }` },
+                children,
+            );
+            boardBox.push( boardRow );
+        }
+        return boardBox;
+    });
+
     return (
-        <div className="board-box">
-            <div className="board-row">
+        <div id="boardBox" className="board-box">
+            { boardContainer()}
+            {/* <div className="board-row">
                 {renderSquare( 0 )}
                 {renderSquare( 1 )}
                 {renderSquare( 2 )}
@@ -54,7 +76,7 @@ function Board( props ) {
                 {renderSquare( 6 )}
                 {renderSquare( 7 )}
                 {renderSquare( 8 )}
-            </div>
+            </div> */}
         </div>
     );
 }
@@ -66,6 +88,7 @@ function Game() {
     } ]);
     const [ xIsNext, setXIsNext ] = useState( true );
     const [ stepNumber, setStepNumber ] = useState( 0 );
+    const [ sortAsc, setSortAsc ] = useState( true );
 
     const current = history[stepNumber];
 
@@ -73,6 +96,10 @@ function Game() {
         const desc = move
             ? `Go to move #${ move } [${ history[move].coordinates.x }, ${ history[move].coordinates.y }]`
             : 'Go to game start';
+
+        // const asc = desc.sort(function(a, b)  {
+        //     return a - b;
+        //   });
         return (
             // eslint-disable-next-line react/no-array-index-key
             <li key={ move }>
@@ -86,9 +113,11 @@ function Game() {
         );
     });
 
-    const winner = calculateWinner( current.squares );
+    const { winner, line = [] } = calculateWinner( current.squares );
     let status;
-    if ( winner ) {
+    if ( winner === 'draw' ) {
+        status = '무승부입니다.';
+    } else if ( winner ) {
         status = `Winner: ${ winner }`;
     } else {
         status = `Next player: ${ xIsNext ? 'X' : 'O' }`;
@@ -102,7 +131,8 @@ function Game() {
         const coordinates = { x, y };
         // .slice()를 호출하는 것으로 기존 배열을 수정하지 않고 squares 배열의 복사본을 생성하여 수정
         // const squaresTemp = squares.slice();
-        if ( calculateWinner( squares ) || squares[i]) {
+        const winInfo = calculateWinner( squares );
+        if ( winInfo.winner || squares[i]) {
             return;
         }
         squares[i] = xIsNext ? 'X' : 'O';
@@ -120,13 +150,17 @@ function Game() {
         <div className="game">
             <div className="game-board">
                 <Board
+                    winnerLines={ line }
                     squares={ current.squares }
                     onClick={ ( i ) => handleClick( i ) }
                 />
             </div>
             <div className="game-info">
+                <button onClick={ () => setSortAsc( !sortAsc ) }>
+                    {`정렬 : ${ sortAsc ? '오름차순' : '내림차순' }`}
+                </button>
                 <div className="status">{status}</div>
-                <ol>{moves}</ol>
+                <ol>{sortAsc ? moves : moves.reverse()}</ol>
             </div>
         </div>
     );
@@ -145,11 +179,17 @@ function calculateWinner( squares ) {
         [ 0, 4, 8 ],
         [ 2, 4, 6 ],
     ];
+    const winInfo = { winner: null };
+
     for ( let i = 0; i < lines.length; i += 1 ) {
         const [ a, b, c ] = lines[i];
         if ( squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+            winInfo.winner = squares[a];
+            winInfo.line = lines[i];
+            return winInfo;
         }
     }
-    return null;
+    if ( !squares.includes( null ) ) winInfo.winner = 'draw';
+
+    return winInfo;
 }
